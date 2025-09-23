@@ -3,13 +3,13 @@ import { Camera, CameraView } from 'expo-camera';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useEffect, useRef, useState } from 'react';
 import {
-  Dimensions,
-  SafeAreaView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View
+    Dimensions,
+    SafeAreaView,
+    StatusBar,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View
 } from 'react-native';
 
 interface QRScannerScreenProps {
@@ -35,8 +35,19 @@ const QRScannerScreen: React.FC<QRScannerScreenProps> = ({
 
   // Definir la función fuera para poder reutilizarla
   const getCameraPermissions = async () => {
-  const { status } = await Camera.requestCameraPermissionsAsync();
-  setHasPermission(status === 'granted');
+    try {
+      console.log('📷 Requesting camera permissions...');
+      const { status } = await Camera.requestCameraPermissionsAsync();
+      console.log('📷 Camera permission status:', status);
+      setHasPermission(status === 'granted');
+      
+      if (status !== 'granted') {
+        console.warn('📷 Camera permission denied');
+      }
+    } catch (error) {
+      console.error('📷 Error requesting camera permissions:', error);
+      setHasPermission(false);
+    }
   };
 
   useEffect(() => {
@@ -110,8 +121,21 @@ const QRScannerScreen: React.FC<QRScannerScreenProps> = ({
             barcodeScannerSettings={{
               barcodeTypes: ['qr'],
             }}
-            onCameraReady={() => setIsCameraReady(true)}
+            onCameraReady={() => {
+              console.log('📷 Camera ready');
+              setIsCameraReady(true);
+            }}
+            onMountError={(error) => {
+              console.error('📷 Camera mount error:', error);
+            }}
           />
+          
+          {/* Loading indicator while camera initializes */}
+          {!isCameraReady && (
+            <View style={styles.cameraLoading}>
+              <Text style={styles.loadingText}>Iniciando cámara...</Text>
+            </View>
+          )}
           
           {/* Scanner Overlay */}
           <View style={styles.overlay}>
@@ -124,25 +148,15 @@ const QRScannerScreen: React.FC<QRScannerScreenProps> = ({
               
               {/* Scanner Frame */}
               <View style={styles.scannerFrame}>
-                <LinearGradient
-                  colors={['#7c3aed', '#a855f7']}
-                  style={styles.scannerBorder}
-                >
-                  <View style={styles.scannerInner}>
-                    {/* Corner Indicators */}
-                    <View style={[styles.corner, styles.cornerTopLeft]} />
-                    <View style={[styles.corner, styles.cornerTopRight]} />
-                    <View style={[styles.corner, styles.cornerBottomLeft]} />
-                    <View style={[styles.corner, styles.cornerBottomRight]} />
-                    
-                    {/* Camera Icon in Center */}
-                    <View style={styles.centerIcon}>
-                      <View style={styles.cameraIconCircle}>
-                        <Ionicons name="camera-outline" size={32} color="#7c3aed" />
-                      </View>
-                    </View>
-                  </View>
-                </LinearGradient>
+                <View style={styles.scannerInner}>
+                  {/* Corner Indicators */}
+                  <View style={[styles.corner, styles.cornerTopLeft]} />
+                  <View style={[styles.corner, styles.cornerTopRight]} />
+                  <View style={[styles.corner, styles.cornerBottomLeft]} />
+                  <View style={[styles.corner, styles.cornerBottomRight]} />
+                  
+                  {/* Centro completamente transparente para no tapar la cámara */}
+                </View>
               </View>
               
               <View style={styles.overlaySide} />
@@ -258,11 +272,6 @@ const styles = StyleSheet.create({
     width: scannerSize,
     height: scannerSize,
   },
-  scannerBorder: {
-    flex: 1,
-    borderRadius: 20,
-    padding: 3,
-  },
   scannerInner: {
     flex: 1,
     backgroundColor: 'transparent',
@@ -273,8 +282,9 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: 30,
     height: 30,
-    borderColor: '#7c3aed',
-    borderWidth: 3,
+    borderColor: '#ffffff',
+    borderWidth: 4,
+    backgroundColor: 'transparent',
   },
   cornerTopLeft: {
     top: 10,
@@ -303,23 +313,6 @@ const styles = StyleSheet.create({
     borderLeftWidth: 0,
     borderTopWidth: 0,
     borderBottomRightRadius: 10,
-  },
-  centerIcon: {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: [{ translateX: -35 }, { translateY: -35 }],
-  },
-  cameraIconCircle: {
-    width: 70,
-    height: 70,
-    borderRadius: 35,
-    backgroundColor: 'rgba(124, 58, 237, 0.1)',
-    borderWidth: 2,
-    borderColor: '#7c3aed',
-    borderStyle: 'dashed',
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   overlayBottom: {
     flex: 1,
@@ -387,6 +380,21 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
     fontWeight: '600',
+  },
+  cameraLoading: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  loadingText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '500',
   },
 });
 
