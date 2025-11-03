@@ -1,5 +1,3 @@
-import { useConnectivity } from '@/hooks/useConnectivity';
-import { useI18n } from '@/hooks/useI18n';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
@@ -14,6 +12,8 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
+import { useI18n } from '@/hooks/useI18n';
+import { useConnectivity } from '@/hooks/useConnectivity';
 
 export default function SettingsTab() {
   const router = useRouter();

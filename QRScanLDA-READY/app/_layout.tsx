@@ -5,7 +5,7 @@ import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import '../services/i18n'; // Inicializar i18n
 
 export default function RootLayout() {
