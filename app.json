@@ -16,7 +16,8 @@
     },
     "android": {
       "permissions": [
-        "CAMERA"
+        "CAMERA",
+        "android.permission.CAMERA"
       ],
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
@@ -25,7 +26,8 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.godscience.QRScanLDA"
     },
     "web": {
       "output": "static",
@@ -45,11 +47,18 @@
           }
         }
       ],
-      "expo-barcode-scanner"
+      "expo-barcode-scanner",
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "2f6d5ca8-3e9e-476b-84a1-1a7885546de5"
+      }
     }
   }
 }
